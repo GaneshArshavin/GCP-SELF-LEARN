@@ -29,7 +29,7 @@ func (s *Svc) Login(ctx context.Context, req *pb.LogInRequest) (resp *pb.LogInRe
 	count, err := s.Storage.GetLoginAttempts(ctx, req.GetUsername())
 	if err != nil {
 		// handle redis error by defaulting count to 0
-		log.Printf("Failed to get redis retry count")
+		//	return &pb.LogInResponse{Token: ""}, errors.New("Error : Error Fetching in User rate limit info from Redis")
 		count = 0
 	}
 	if count > 5 {
@@ -41,6 +41,10 @@ func (s *Svc) Login(ctx context.Context, req *pb.LogInRequest) (resp *pb.LogInRe
 	if err != nil {
 		// DB error
 		return &pb.LogInResponse{Token: ""}, errors.New("Error : Error Fetching in User from DB")
+	}
+
+	if len(users) == 0 {
+		return &pb.LogInResponse{Token: ""}, errors.New("User Not Found : User not found , Please Sign up")
 	}
 
 	user := users[0]
