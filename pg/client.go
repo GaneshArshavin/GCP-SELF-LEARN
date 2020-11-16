@@ -12,8 +12,8 @@ import (
 )
 
 type client struct {
-	db          *sqlx.DB
-	config      Config
+	db     *sqlx.DB
+	config Config
 }
 
 func NewClient(config Config) Client {

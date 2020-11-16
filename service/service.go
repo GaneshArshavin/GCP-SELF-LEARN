@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/carousell/chope-assignment/model"
 	pb "github.com/carousell/chope-assignment/proto"
@@ -21,7 +22,10 @@ func (s *Svc) Login(ctx context.Context, req *pb.LogInRequest) (*pb.LogInRespons
 	user.Email.Scan("ganesh")
 	user.Passowrd.Scan("sqweqwe")
 	user.Username.Scan("GA")
-	s.Storage.CreateUser(ctx, &user)
+	err := s.Storage.CreateUser(ctx, &user)
+	if err != nil {
+		return &pb.LogInResponse{Token: ""}, errors.New("Error : Failed to save user to the database")
+	}
 	return &pb.LogInResponse{Token: "NAE"}, nil
 }
 
