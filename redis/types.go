@@ -14,6 +14,7 @@ type Config struct {
 type Client interface {
 	Get(ctx context.Context, key string) (result []byte, err error)
 	Set(ctx context.Context, key string, value []byte, expiry time.Duration) error
+	Del(ctx context.Context, key string) error
 	IncrWithTTL(ctx context.Context, key string, ttl time.Duration) (err error)
 	Close()
 }

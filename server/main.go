@@ -64,9 +64,12 @@ func newServer() service.UserLoginServer {
 	}
 
 	redisConfig := &redis.Config{
+		//disabling it as GCP Is costing me will turn it on on request
+		//
+		//Host:        "10.103.214.219",
 		Host:        "127.0.0.1",
 		Port:        6379,
-		DialTimeout: time.Duration(100) * time.Millisecond,
+		DialTimeout: time.Duration(1000) * time.Millisecond,
 	}
 	var err error
 	s.Storage, err = store.NewClient(pgMasterConfig, pgSlaveConfig, redisConfig)

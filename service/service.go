@@ -3,9 +3,11 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"math/rand"
 
+	"github.com/carousell/chope-assignment/model"
 	pb "github.com/carousell/chope-assignment/proto"
 	"github.com/carousell/chope-assignment/store"
 )
@@ -29,52 +31,115 @@ func (s *Svc) Login(ctx context.Context, req *pb.LogInRequest) (resp *pb.LogInRe
 	count, err := s.Storage.GetLoginAttempts(ctx, req.GetUsername())
 	if err != nil {
 		// handle redis error by defaulting count to 0
-		return &pb.LogInResponse{Token: ""}, err
-		//count = 0
+		count = 0
 	}
 	if count > 5 {
 		return &pb.LogInResponse{Token: ""}, errors.New("Error : Rate limitted please try again in some time")
 	}
 
 	//jhandle no user returned
-	users, err := s.Storage.GetAccountsUser(ctx, req.GetUsername())
+	user, err := s.CheckifExistingUser(ctx, req.GetUsername(), "")
 	if err != nil {
-		// DB error
-		return &pb.LogInResponse{Token: ""}, errors.New("Error : Error Fetching in User from DB")
+		return &pb.LogInResponse{Token: ""}, err
 	}
-
-	if len(users) == 0 {
-		return &pb.LogInResponse{Token: ""}, errors.New("User Not Found : User not found , Please Sign up")
+	if user == nil {
+		return &pb.LogInResponse{Token: ""}, errors.New("User does not exist")
 	}
-
-	user := users[0]
-
-	if IsUserActive(user, req.GetPassword()) {
+	token := ""
+	isActive, err := IsUserActive(user, req.GetPassword())
+	if isActive {
 		// Generate Tokens for Inside and 3rd Party
-		token, err := s.Storage.StoreInHouseToken(ctx, randSeq(rand.Intn(100)), user.ID.String, "8h")
+		token, err = s.Storage.StoreInHouseToken(ctx, randSeq(rand.Intn(100)), user.ID.String, "8h")
 		if err != nil {
 			return &pb.LogInResponse{Token: ""}, errors.New("Error : Cannot generate Inhouse token")
 		}
 		//store login activity
-		err = s.Storage.StoreLoginActivity(ctx, user.ID.String, "InHouse", true)
+		err = s.Storage.StoreActivity(ctx, user.ID.String, "InHouse", true, "Login")
 		if err != nil {
 			log.Println("error whilr storing log activity")
 		}
-		return &pb.LogInResponse{Token: token}, errors.New("Error : Rate limitted please try again in some time")
+		return &pb.LogInResponse{Token: token}, nil
 	} else {
 		s.Storage.IncrementRedisRetryCounter(ctx, user.Username.String)
-		err = s.Storage.StoreLoginActivity(ctx, user.ID.String, "InHouse", false)
-		if err != nil {
-			log.Println("error while storing log activity")
-		}
+		s.Storage.StoreActivity(ctx, user.ID.String, "InHouse", false, "Login")
+
+		return &pb.LogInResponse{Token: token}, err
 
 	}
+	return &pb.LogInResponse{Token: token}, nil
+}
 
-	//	err := s.Storage.CreateUser(ctx, &user)
-	//	if err != nil {
-	//	return &pb.LogInResponse{Token: ""}, errors.New("Error : Failed to save user to the database")
-	//}
-	return &pb.LogInResponse{Token: "NAE"}, nil
+func (s *Svc) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+	resp := &pb.RegisterResponse{}
+	if req.GetApiKey() == "" || req.GetSecret() == "" {
+		return &pb.RegisterResponse{Token: ""}, errors.New("Bad Request : Please provide Api/Secret")
+	}
+
+	if req.Username == "" || req.Password == "" || req.Email == "" {
+		return &pb.RegisterResponse{Token: ""}, errors.New("Error : Please fill in username and password")
+	}
+
+	existingUser, err := s.CheckifExistingUser(ctx, req.GetUsername(), req.GetEmail())
+
+	if err != nil {
+		return &pb.RegisterResponse{Token: ""}, errors.New("Existing User: Error Fetching existing User")
+	}
+	if existingUser != nil {
+		return &pb.RegisterResponse{Token: ""}, errors.New("Existing User: The user is existing in the user")
+	}
+
+	modelUser := model.AccountsUser{}
+	modelUser.Email.Scan(req.GetEmail())
+	modelUser.Username.Scan(req.GetUsername())
+	modelUser.Passowrd.Scan(RotEn(req.GetPassword()))
+	modelUser.IsActive.Scan(true)
+	user, err := s.Storage.CreateUser(ctx, &modelUser)
+	if err != nil {
+		return &pb.RegisterResponse{Token: ""}, errors.New("DB Error: Error Saving DB to the User")
+	}
+	token := ""
+	token, err = s.Storage.StoreInHouseToken(ctx, randSeq(rand.Intn(100)), user.ID.String, "8h")
+	if err != nil {
+		return &pb.RegisterResponse{Token: ""}, errors.New("Token Error: Error generating token")
+	}
+	resp.Token = token
+	resp.User = &pb.User{}
+	resp.User.Username = modelUser.Username.String
+	resp.User.Email = modelUser.Email.String
+	err = s.Storage.StoreActivity(ctx, modelUser.ID.String, "InHouse", true, "Register")
+	if err != nil {
+		log.Println("error whilr storing log activity")
+	}
+	return resp, nil
+}
+
+func (s *Svc) Logout(ctx context.Context, req *pb.LogoutRequest) (resp *pb.LogoutResponse, err error) {
+	userID, err := s.Storage.GetInHouseToken(ctx, req.GetToken())
+	if userID != req.GetToken() {
+		return &pb.LogoutResponse{IsLoggedOut: false}, nil
+	}
+	err = s.Storage.RemoveInHouseToken(ctx, req.GetToken())
+	if err != nil {
+		return &pb.LogoutResponse{IsLoggedOut: false}, errors.New("Logout User : Failed to logout user ,deleting token failed")
+	}
+	err = s.Storage.StoreActivity(ctx, req.GetUserId(), "InHouse", true, "Logout")
+	if err != nil {
+		log.Println("error whilr storing log activity")
+	}
+	return &pb.LogoutResponse{IsLoggedOut: true}, nil
+}
+
+func (s *Svc) CheckifExistingUser(ctx context.Context, username string, email string) (user *model.AccountsUser, err error) {
+	users, err := s.Storage.GetUsersByUsernameOrEmail(ctx, username, email)
+	if err != nil {
+		// DB error
+		return nil, errors.New("Error : Error Fetching in User from DB")
+	}
+	if len(users) == 0 {
+		return nil, nil
+	}
+	user = users[0]
+	return user, nil
 }
 
 func (s *Svc) mustEmbedUnimplementedUserLoginServer() {

@@ -26,13 +26,28 @@ func main() {
 	c := pb.NewUserLoginClient(conn)
 	fmt.Printf("c = %+v\n", c)
 	testLogin(c)
+	//testRegister(c)
 }
 
 func testLogin(c pb.UserLoginClient) {
 	req := new(pb.LogInRequest)
 	req.Username = "Ganesh"
-	req.Password = "qwqwdqdwd"
+	req.Password = "Welcome135"
 	resp, err := c.Login(ctx, req)
+	if err != nil {
+		fmt.Println("err-heree", err)
+	}
+	fmt.Println("respt", resp.Token)
+}
+
+func testRegister(c pb.UserLoginClient) {
+	req := new(pb.RegisterRequest)
+	req.Username = "Ganesh"
+	req.Password = "Welcome135"
+	req.Email = "ganesharshavin@gmail.com"
+	req.ApiKey = "asas"
+	req.Secret = "qwwqd"
+	resp, err := c.Register(ctx, req)
 	if err != nil {
 		fmt.Println("err-heree", err)
 	}

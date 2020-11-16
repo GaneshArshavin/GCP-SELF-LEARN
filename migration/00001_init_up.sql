@@ -1,8 +1,8 @@
     CREATE TABLE accounts_user (
     id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-    username character varying(255) UNIQUE,
-    passowrd character varying,
-    email character varying(255) UNIQUE,
+    username character varying(255) UNIQUE NOT NULL,
+    passowrd character varying NOT NULL,
+    email character varying(255) UNIQUE NOT NULL,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     is_active boolean
@@ -18,3 +18,8 @@ CREATE TABLE accounts_activity (
     updated_at timestamp with time zone DEFAULT now(),
     is_success boolean
 );
+
+CREATE TABLE api_secret (
+   api_key character varying(255),
+   secret character varying(255)
+)

@@ -26,5 +26,5 @@ func RotEn(strRaw string) string {
 
 //Decrypt
 func RotDn(strRaw string) string {
-	return rot47(rot47(strRaw))
+	return rot47(strRaw)
 }

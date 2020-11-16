@@ -36,6 +36,14 @@ func (r *client) Set(ctx context.Context, key string, value []byte, expiry time.
 	return nil
 }
 
+func (r *client) Del(ctx context.Context, key string) (err error) {
+
+	err = r.client.Del(key, key).Err()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
 func (r *client) Incr(ctx context.Context, key string) (err error) {
 	return r.IncrWithTTL(ctx, key, 0)
 }

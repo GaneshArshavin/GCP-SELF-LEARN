@@ -10,6 +10,6 @@ func GetInHouseTokenKey(token string) string {
 	return fmt.Sprintf("inhouse_%s", token)
 }
 
-func GetThirdPartyTokenKey(token string) string {
-	return fmt.Sprintf("inhouse_%s", token)
+func GetThirdPartyTokenKey(token string, companyName string) string {
+	return fmt.Sprintf("inhouse_%s_%s", token)
 }
