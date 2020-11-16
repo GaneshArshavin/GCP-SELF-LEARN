@@ -29,8 +29,8 @@ func (s *Svc) Login(ctx context.Context, req *pb.LogInRequest) (resp *pb.LogInRe
 	count, err := s.Storage.GetLoginAttempts(ctx, req.GetUsername())
 	if err != nil {
 		// handle redis error by defaulting count to 0
-		//	return &pb.LogInResponse{Token: ""}, errors.New("Error : Error Fetching in User rate limit info from Redis")
-		count = 0
+		return &pb.LogInResponse{Token: ""}, err
+		//count = 0
 	}
 	if count > 5 {
 		return &pb.LogInResponse{Token: ""}, errors.New("Error : Rate limitted please try again in some time")
