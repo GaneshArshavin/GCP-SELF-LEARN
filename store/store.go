@@ -24,10 +24,10 @@ func NewClient(pgMasterConfig *pg.Config, pgSlaveConfig *pg.Config) (StorageServ
 }
 
 func (s *storage) CreateUser(ctx context.Context, m *model.AccountsUser) (err error) {
-	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s,%s,%s)", AccountsUserTable, "username,passowrd,email", m.Username.String, m.Passowrd.String, m.Email.String)
-	err = s.db.Exec(ctx, query, nil)
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES ('%s','%s','%s')", AccountsUserTable, "\"username\",\"passowrd\",\"email\"", m.Username.String, m.Passowrd.String, m.Email.String)
+	err = s.db.Exec(ctx, query)
 	if err != nil {
-		fmt.Printf("CreateUser-Err", err)
+		return err
 	}
 	return nil
 }

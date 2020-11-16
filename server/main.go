@@ -43,18 +43,20 @@ func main() {
 func newServer() service.UserLoginServer {
 	s := &service.Svc{}
 	pgMasterConfig := &pg.Config{
-		Host:               "127.0.0.1",
+		Host:               "35.185.179.122",
 		Port:               5432,
 		User:               "rajagopalganesh",
-		DBName:             "choper_user",
+		Password:           "Welcome@135",
+		DBName:             "chope_user",
 		MaxIdleConnections: 10,
 		MaxOpenConnections: 10,
 	}
 	pgSlaveConfig := &pg.Config{
-		Host:               "127.0.0.1",
+		Host:               "35.185.179.122",
 		Port:               5432,
 		User:               "rajagopalganesh",
-		DBName:             "choper_user",
+		DBName:             "chope_user",
+		Password:           "Welcome@135",
 		MaxIdleConnections: 10,
 		MaxOpenConnections: 10,
 	}
