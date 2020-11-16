@@ -318,6 +318,7 @@ func (db *DB) NamedExec(query string, arg interface{}) (sql.Result, error) {
 // Select using this DB.
 // Any placeholder parameters are replaced with supplied args.
 func (db *DB) Select(dest interface{}, query string, args ...interface{}) error {
+	fmt.Println("sqlx-go", query)
 	return Select(db, dest, query, args...)
 }
 
@@ -667,6 +668,8 @@ func Preparex(p Preparer, query string) (*Stmt, error) {
 // The *sql.Rows are closed automatically.
 // Any placeholder parameters are replaced with supplied args.
 func Select(q Queryer, dest interface{}, query string, args ...interface{}) error {
+	fmt.Print("qweqwe", query)
+	fmt.Print("qweqwe-123", args)
 	rows, err := q.Queryx(query, args...)
 	if err != nil {
 		return err

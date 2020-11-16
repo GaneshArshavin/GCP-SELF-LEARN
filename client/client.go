@@ -30,8 +30,8 @@ func main() {
 
 func testLogin(c pb.UserLoginClient) {
 	req := new(pb.LogInRequest)
-	req.Username = ""
-	req.Password = ""
+	req.Username = "Ganesh"
+	req.Password = "qwqwdqdwd"
 	resp, err := c.Login(ctx, req)
 	if err != nil {
 		fmt.Println("err-heree", err)

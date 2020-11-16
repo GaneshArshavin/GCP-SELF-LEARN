@@ -1,13 +1,18 @@
 // Package pg provides an interface to the Postgres database.
 package pg
 
-import "context"
+import (
+	"context"
+	"database/sql"
+)
 
 // Client represents the supported operations on the Postgres database. The
 // methods on the client should not have service-specific business logic; they
 // should only provide an interface to interact with the database.
 type Client interface {
 	Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+	Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+	Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
 	Exec(ctx context.Context, query string, args ...interface{}) error
 	Close()
 }

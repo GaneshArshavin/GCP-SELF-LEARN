@@ -47,6 +47,29 @@ func (c *client) Exec(ctx context.Context, query string, args ...interface{}) er
 	return nil
 }
 
+// Select is a wrapper around dbutils.Select. Logging is added if enabled.
+func (c *client) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	err := c.db.Select(dest, query, args...)
+	if err == sql.ErrNoRows {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *client) Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+	rows, err := c.db.Query(query)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
+}
+
 func (c *client) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
 	err := c.db.Get(dest, query, args...)
 	if err == sql.ErrNoRows {
