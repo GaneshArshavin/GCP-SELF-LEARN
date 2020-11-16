@@ -6,6 +6,7 @@ import (
 
 	"github.com/carousell/chope-assignment/model"
 	"github.com/carousell/chope-assignment/pg"
+	"github.com/carousell/chope-assignment/redis"
 )
 
 const (
@@ -14,12 +15,14 @@ const (
 )
 
 type storage struct {
-	db pg.Manager
+	db    pg.Manager
+	redis redis.Client
 }
 
-func NewClient(pgMasterConfig *pg.Config, pgSlaveConfig *pg.Config) (StorageService, error) {
+func NewClient(pgMasterConfig *pg.Config, pgSlaveConfig *pg.Config, redisConfig *redis.Config) (StorageService, error) {
 	s := new(storage)
 	s.db = pg.NewManager(*pgMasterConfig, *pgSlaveConfig)
+	s.redis = redis.NewClient(*redisConfig)
 	return s, nil
 }
 

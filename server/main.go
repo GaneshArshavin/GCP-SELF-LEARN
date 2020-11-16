@@ -4,9 +4,11 @@ import (
 	"flag"
 	"log"
 	"net"
+	"time"
 
 	pg "github.com/carousell/chope-assignment/pg"
 	pb "github.com/carousell/chope-assignment/proto"
+	"github.com/carousell/chope-assignment/redis"
 	"github.com/carousell/chope-assignment/service"
 	store "github.com/carousell/chope-assignment/store"
 	"google.golang.org/grpc"
@@ -60,8 +62,14 @@ func newServer() service.UserLoginServer {
 		MaxIdleConnections: 10,
 		MaxOpenConnections: 10,
 	}
+
+	redisConfig := &redis.Config{
+		Host:        "127.0.0.1",
+		Port:        6379,
+		DialTimeout: time.Duration(100) * time.Millisecond,
+	}
 	var err error
-	s.Storage, err = store.NewClient(pgMasterConfig, pgSlaveConfig)
+	s.Storage, err = store.NewClient(pgMasterConfig, pgSlaveConfig, redisConfig)
 	if err != nil {
 		panic(err)
 	}
