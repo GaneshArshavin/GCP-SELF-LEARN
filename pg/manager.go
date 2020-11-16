@@ -2,11 +2,12 @@ package pg
 
 import (
 	"context"
+	"database/sql"
 )
 
 type manager struct {
-	dbMaster    Client
-	dbSlave     Client
+	dbMaster Client
+	dbSlave  Client
 }
 
 func NewManager(dbMasterConfig Config, dbSlaveConfig Config) Manager {
@@ -18,6 +19,14 @@ func NewManager(dbMasterConfig Config, dbSlaveConfig Config) Manager {
 
 func (m *manager) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
 	return m.dbSlave.Get(ctx, dest, query, args...)
+}
+
+func (m *manager) Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+	return m.dbMaster.Query(ctx, query, args...)
+}
+
+func (m *manager) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return m.dbMaster.Select(ctx, dest, query, args...)
 }
 
 func (m *manager) Exec(ctx context.Context, query string, args ...interface{}) error {

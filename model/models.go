@@ -55,10 +55,21 @@ func (v NullBool) Value() (driver.Value, error) {
 }
 
 type AccountsUser struct {
-	ID        NullString `json:"id"`
-	Username  NullString `json:"username	"`
-	Passowrd  NullString `json:"passowrd"`
-	Email     NullString `json:"email"`
-	CreatedAt NullTime   `json:"created_at"`
-	UpdatedAt NullTime   `json:"updated_at"`
+	ID        NullString `db:"id"`
+	Username  NullString `db:"username"`
+	Passowrd  NullString `db:"passowrd"`
+	Email     NullString `db:"email"`
+	CreatedAt NullTime   `db:"created_at"`
+	UpdatedAt NullTime   `db:"updated_at"`
+	IsActive  NullBool   `db:"is_active"`
+}
+
+type AccountsActivity struct {
+	ID            NullString `db:"id"`
+	userID        NullString `db:"user_id"`
+	CompanyName   NullString `db:"company_name"`
+	OperationType NullString `db:"operation_type"`
+	CreatedAt     NullTime   `db:"created_at"`
+	UpdatedAt     NullTime   `db:"updated_at"`
+	IsSuccess     NullBool   `db:"is_success"`
 }
