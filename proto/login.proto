@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+option go_package = "login";
+
+package login;
+
+// Interface exported by the server.
+service UserLogin {
+  rpc Login (LogInRequest) returns (LogInResponse);
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+}
+
+message LogInRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LogInResponse {
+  string token = 1;
+}
+
+message RegisterRequest {
+  string api_key = 1;
+  string secret = 2;
+  string username = 3;
+  string email = 4;
+  string password = 5;
+}
+
+message User {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message RegisterResponse {
+  string token = 1;
+  User user = 2;
+}
+
+message LogoutRequest {
+  string user_id = 1;
+  string token = 2;
+}
+
+message LogoutResponse {
+  bool is_logged_out = 1;
+}
