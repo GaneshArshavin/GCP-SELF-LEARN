@@ -1,4 +1,4 @@
 #!/bin/bash
-docker build . -t chope-assignment || exit
-docker run  -p 8080:8080 -d --name chope-assignment chope-assignment go run server/main.go
-docker exec -ti chope-assignment /bin/bash
+docker build . -t gcp-self-study || exit
+docker run  -p 8080:8080 -d --name gcp-self-study gcp-self-study go run server/main.go
+docker exec -ti gcp-self-study /bin/bash

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	pb "github.com/carousell/chope-assignment/proto"
+	pb "github.com/carousell/gcp-self-study/proto"
 	"google.golang.org/grpc"
 )
 

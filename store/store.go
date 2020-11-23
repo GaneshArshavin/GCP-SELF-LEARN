@@ -7,9 +7,9 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/carousell/chope-assignment/model"
-	"github.com/carousell/chope-assignment/pg"
-	"github.com/carousell/chope-assignment/redis"
+	"github.com/carousell/gcp-self-study/model"
+	"github.com/carousell/gcp-self-study/pg"
+	"github.com/carousell/gcp-self-study/redis"
 	"github.com/gofrs/uuid"
 	"github.com/pkg/errors"
 )

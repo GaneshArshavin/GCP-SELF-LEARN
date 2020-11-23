@@ -11,9 +11,9 @@ RUN apt-get update
 RUN apt-get install -y google-cloud-sdk
 RUN apt-get clean
 
-RUN mkdir -p /go/src/github.com/carousell/chope-assignment
-WORKDIR /go/src/github.com/carousell/chope-assignment
-COPY . /go/src/github.com/carousell/chope-assignment
-RUN go install github.com/carousell/chope-assignment/server
+RUN mkdir -p /go/src/github.com/carousell/gcp-self-study
+WORKDIR /go/src/github.com/carousell/gcp-self-study
+COPY . /go/src/github.com/carousell/gcp-self-study
+RUN go install github.com/carousell/gcp-self-study/server
 
 EXPOSE 8080

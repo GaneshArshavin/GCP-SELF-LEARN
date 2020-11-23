@@ -4,7 +4,7 @@ import (
 	"errors"
 	"math/rand"
 
-	"github.com/carousell/chope-assignment/model"
+	"github.com/carousell/gcp-self-study/model"
 )
 
 //IsUserActive determines all the condition for an active businness user

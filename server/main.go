@@ -6,11 +6,11 @@ import (
 	"net"
 	"time"
 
-	pg "github.com/carousell/chope-assignment/pg"
-	pb "github.com/carousell/chope-assignment/proto"
-	"github.com/carousell/chope-assignment/redis"
-	"github.com/carousell/chope-assignment/service"
-	store "github.com/carousell/chope-assignment/store"
+	pg "github.com/carousell/gcp-self-study/pg"
+	pb "github.com/carousell/gcp-self-study/proto"
+	"github.com/carousell/gcp-self-study/redis"
+	"github.com/carousell/gcp-self-study/service"
+	store "github.com/carousell/gcp-self-study/store"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -49,7 +49,7 @@ func newServer() service.UserLoginServer {
 		Port:               5432,
 		User:               "rajagopalganesh",
 		Password:           "Welcome@135",
-		DBName:             "chope_user",
+		DBName:             "gcp-self-study_user",
 		MaxIdleConnections: 10,
 		MaxOpenConnections: 10,
 	}
@@ -57,7 +57,7 @@ func newServer() service.UserLoginServer {
 		Host:               "35.185.179.122",
 		Port:               5432,
 		User:               "rajagopalganesh",
-		DBName:             "chope_user",
+		DBName:             "gcp-self-study_user",
 		Password:           "Welcome@135",
 		MaxIdleConnections: 10,
 		MaxOpenConnections: 10,

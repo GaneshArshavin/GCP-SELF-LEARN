@@ -3,7 +3,7 @@ package service
 import (
 	"strings"
 )
-
+// Storing Password and other PII in logs/DB needs to have a encryption
 func rot47(input string) string {
 
 	var result []string

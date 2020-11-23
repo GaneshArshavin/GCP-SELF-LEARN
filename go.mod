@@ -1,4 +1,6 @@
-module github.com/carousell/chope-assignment
+module github.com/carousell/gcp-self-study
+
+go 1.15
 
 require (
 	github.com/Masterminds/squirrel v1.1.0

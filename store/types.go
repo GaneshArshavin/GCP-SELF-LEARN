@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	"github.com/carousell/chope-assignment/model"
+	"github.com/carousell/gcp-self-study/model"
 )
 
 type StorageService interface {

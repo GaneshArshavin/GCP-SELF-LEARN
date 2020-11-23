@@ -3,13 +3,12 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"math/rand"
 
-	"github.com/carousell/chope-assignment/model"
-	pb "github.com/carousell/chope-assignment/proto"
-	"github.com/carousell/chope-assignment/store"
+	"github.com/carousell/gcp-self-study/model"
+	pb "github.com/carousell/gcp-self-study/proto"
+	"github.com/carousell/gcp-self-study/store"
 )
 
 type Svc struct {
@@ -37,7 +36,7 @@ func (s *Svc) Login(ctx context.Context, req *pb.LogInRequest) (resp *pb.LogInRe
 		return &pb.LogInResponse{Token: ""}, errors.New("Error : Rate limitted please try again in some time")
 	}
 
-	//jhandle no user returned
+	//handle no user returned
 	user, err := s.CheckifExistingUser(ctx, req.GetUsername(), "")
 	if err != nil {
 		return &pb.LogInResponse{Token: ""}, err
@@ -46,6 +45,7 @@ func (s *Svc) Login(ctx context.Context, req *pb.LogInRequest) (resp *pb.LogInRe
 		return &pb.LogInResponse{Token: ""}, errors.New("User does not exist")
 	}
 	token := ""
+	// We can have more business logic on to check validity of user login here
 	isActive, err := IsUserActive(user, req.GetPassword())
 	if isActive {
 		// Generate Tokens for Inside and 3rd Party
@@ -69,6 +69,7 @@ func (s *Svc) Login(ctx context.Context, req *pb.LogInRequest) (resp *pb.LogInRe
 	return &pb.LogInResponse{Token: token}, nil
 }
 
+// Register function is used to create the user record , and generate a token .
 func (s *Svc) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	resp := &pb.RegisterResponse{}
 	if req.GetApiKey() == "" || req.GetSecret() == "" {
@@ -113,6 +114,7 @@ func (s *Svc) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Regist
 	return resp, nil
 }
 
+//Logout removes the token and inserts activity
 func (s *Svc) Logout(ctx context.Context, req *pb.LogoutRequest) (resp *pb.LogoutResponse, err error) {
 	userID, err := s.Storage.GetInHouseToken(ctx, req.GetToken())
 	if userID != req.GetToken() {
@@ -129,6 +131,7 @@ func (s *Svc) Logout(ctx context.Context, req *pb.LogoutRequest) (resp *pb.Logou
 	return &pb.LogoutResponse{IsLoggedOut: true}, nil
 }
 
+// CheckifExistingUser implements logic to check before registering
 func (s *Svc) CheckifExistingUser(ctx context.Context, username string, email string) (user *model.AccountsUser, err error) {
 	users, err := s.Storage.GetUsersByUsernameOrEmail(ctx, username, email)
 	if err != nil {
